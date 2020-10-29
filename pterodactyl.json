@@ -69,7 +69,7 @@
     },
     {
       "inline": [
-        "dnf install -y https://repo.saltstack.com/py3/redhat/salt-py3-repo-3002.el8.noarch.rpm && sudo yum clean expire-cache && sudo yum -y install salt-minion",
+        "dnf install -y https://repo.saltstack.com/py3/redhat/salt-py3-repo-3002.el8.noarch.rpm && dnf clean expire-cache && dnf -y install salt-minion",
         "mv /srv/salt/minion /etc/salt/",
         "firstboot=True salt-call --local --state-output=mixed state.apply"
       ],
