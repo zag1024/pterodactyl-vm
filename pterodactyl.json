@@ -1,0 +1,50 @@
+{
+  "builders": [
+    {
+      "accelerator": "kvm",
+      "boot_command": [
+        "<up><tab><spacebar>",
+        "text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ],
+      "disk_compression": true,
+      "disk_size": "30G",
+      "display": "none",
+      "headless": false,
+      "http_directory": "http",
+      "iso_checksum": "sha256:c063ad79a0b55ee2f65f378b54ef87d988b8c9da8003fb0b9cfee13ff4d7e77d",
+      "iso_url": "http://mirror.internode.on.net/pub/centos/8-stream/isos/x86_64/CentOS-Stream-8-x86_64-20201014-boot.iso",
+      "memory": "4096",
+      "name": "pterodactyl",
+      "output_directory": "build",
+      "qemuargs": [
+        [
+          "-m",
+          "2048M"
+        ]
+      ],
+      "shutdown_command": "shutdown -P now",
+      "ssh_password": "packer",
+      "ssh_timeout": "60m",
+      "ssh_username": "root",
+      "type": "qemu",
+      "vm_name": "pterodactyl.qcow2"
+    }
+  ],
+  "provisioners": [
+    {
+      "destination": "/srv/",
+      "source": "files/pterodactyl-salt/",
+      "type": "file"
+    },
+    {
+      "inline": [
+        "dnf install -y https://repo.saltstack.com/py3/redhat/salt-py3-repo-3002.el8.noarch.rpm && sudo yum clean expire-cache && sudo yum -y install salt-minion",
+        "mv /srv/salt/minion /etc/salt/",
+        "firstboot=True salt-call --local --state-output=mixed state.apply"
+      ],
+      "type": "shell"
+    }
+  ],
+  "sensitive-variables": ["password"]
+}
+
